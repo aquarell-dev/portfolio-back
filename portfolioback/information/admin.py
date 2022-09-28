@@ -1,19 +1,18 @@
 from django.contrib import admin
-from django.utils.safestring import mark_safe
 
-from .models import Info
+from .models import Skill, Info
 
+from utils.mixins import SvgPreviewMixin, ImagePreviewMixin
 
-class SvgPreviewMixin:
-    def preview_svg(self, obj):
-        if obj:
-            return mark_safe('<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" '
-                             'stroke-width="1.5" stroke="currentColor" width="50">'
-                             f'{obj.icon}'
-                             '</svg>')
+@admin.register(Skill)
+class AboutAdmin(SvgPreviewMixin, admin.ModelAdmin):
+    list_display = [field.name for field in Skill._meta.get_fields() if field.name not in ['icon']] + ['preview_svg']
+    list_display_links = ['id']
 
 
 @admin.register(Info)
-class InfoAdmin(SvgPreviewMixin, admin.ModelAdmin):
-    list_display = [field.name for field in Info._meta.get_fields() if field.name not in ['icon']] + ['preview_svg']
+class InfoAdmin(ImagePreviewMixin, admin.ModelAdmin):
+    description = 'Avatar'
+
+    list_display = [field.name for field in Info._meta.get_fields() if field.name not in ['image']] + ['preview_image']
     list_display_links = ['id']
